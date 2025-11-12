@@ -266,11 +266,11 @@ def main() -> None:
     mutations_per_chromosome = 3
 
     rng = np.random.default_rng()
-    male_map = Copos("flat.txt")
-    female_map = Copos("flat.txt")
+#    male_map = Copos("flat.txt")
+#    female_map = Copos("flat.txt")
     #male_map = Copos("ivs.txt")
-    #male_map = Copos("ivsqrt.txt")
-    #female_map = Copos("ivs.txt")
+    male_map = Copos("ivsqrt.txt")
+    female_map = Copos("ivs.txt")
 
     q_accum = np.zeros((generations, chromosome_size), dtype=np.float64)
     yac = np.empty((generations, chromosome_size), dtype=np.float64)
