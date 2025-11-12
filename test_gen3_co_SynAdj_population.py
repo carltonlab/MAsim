@@ -33,12 +33,12 @@ def apply_mutations_population(
     chromosome_size: int,
     mutations_per_chromosome: int,
 ) -> int:
-    for arr in arrays:
-        idx = rng.integers(1, chromosome_size - 1, size=(arr.shape[0], mutations_per_chromosome))
-        for row, positions in enumerate(idx):
-            new_ids = np.arange(mutation_counter, mutation_counter + mutations_per_chromosome, dtype=np.int64)
-            arr[row, positions] = new_ids
-            mutation_counter += mutations_per_chromosome
+#    for arr in arrays:
+#        idx = rng.integers(1, chromosome_size - 1, size=(arr.shape[0], mutations_per_chromosome))
+#        for row, positions in enumerate(idx):
+#            new_ids = np.arange(mutation_counter, mutation_counter + mutations_per_chromosome, dtype=np.int64)
+#            arr[row, positions] = new_ids
+#            mutation_counter += mutations_per_chromosome
     return mutation_counter
 
 
@@ -166,6 +166,8 @@ def simulate_population(
     male_x = np.ones((num_pairs, chromosome_size), dtype=np.int64)
     female_x2 = 2 * np.ones((num_pairs, chromosome_size), dtype=np.int64)
     female_x3 = 3 * np.ones((num_pairs, chromosome_size), dtype=np.int64)
+    male_y[2,10]=5 # just this one mutation
+    female_x2[2,-5]=6 #just one 20251112pmc
 
     yac = np.empty((generations, chromosome_size), dtype=np.int64)
     x1ac = np.empty((generations, chromosome_size), dtype=np.int64)
