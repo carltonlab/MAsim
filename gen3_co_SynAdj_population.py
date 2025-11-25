@@ -181,8 +181,8 @@ def simulate_population(
         x2ac[gen] = female_x2[0]
         x3ac[gen] = female_x3[0]
 
-        #q[gen] += np.sum(male_y != male_x, axis=0)
-        q[gen] += np.sum(np.abs(male_y - male_x)>6, axis=0)
+        variant_mask = (male_y != male_x) & ((male_y > 3) | (male_x > 3))
+        q[gen] += np.sum(variant_mask, axis=0)
 
         mutation_counter, male_y, male_x, female_x2, female_x3 = simulate_generation(
             male_y,
@@ -308,7 +308,8 @@ def main() -> None:
         final_male_x = male_x
         final_female_x2 = female_x2
         final_female_x3 = female_x3
-        mutation_counts += ((male_y.min(axis=0) > 3) & (male_y.max(axis=0) > 3)).astype(np.float64)
+        fixed_mask = (male_y[0] > 3) & np.all(male_y == male_y[0], axis=0)
+        mutation_counts += fixed_mask.astype(np.float64)
 
     plot_results(yac, x1ac, x2ac, x3ac, q_accum)
     if final_male_y is not None:
