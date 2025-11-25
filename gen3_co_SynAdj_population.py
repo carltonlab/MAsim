@@ -173,7 +173,7 @@ def simulate_population(
     x3ac = np.empty((generations, chromosome_size), dtype=np.int64)
     q = np.zeros((generations, chromosome_size), dtype=np.float64)
 
-    mutation_counter = 4
+    mutation_counter = 4   # label for each new SNP, starting at 4 since chromosomes are 0~3
 
     for gen in range(generations):
         yac[gen] = male_y[0]
@@ -181,7 +181,8 @@ def simulate_population(
         x2ac[gen] = female_x2[0]
         x3ac[gen] = female_x3[0]
 
-        q[gen] += np.sum(male_y != male_x, axis=0)
+        #q[gen] += np.sum(male_y != male_x, axis=0)
+        q[gen] += np.sum(np.abs(male_y - male_x)>6, axis=0)
 
         mutation_counter, male_y, male_x, female_x2, female_x3 = simulate_generation(
             male_y,
@@ -200,9 +201,11 @@ def simulate_population(
 
 
 def plot_results(yac: np.ndarray, x1ac: np.ndarray, x2ac: np.ndarray, x3ac: np.ndarray, q: np.ndarray) -> None:
+    from PIL import Image
     spacer = np.full((10, yac.shape[1]), -2.0)
     outimg = np.concatenate((yac, spacer, x1ac, spacer, x2ac, spacer, x3ac), axis=0)
-    px.imshow(outimg, aspect="auto").write_html("adj_snpimg.html")
+    colorscale = ["white"] + px.colors.sequential.Bluered
+    px.imshow(outimg, aspect="auto", color_continuous_scale=colorscale).write_html("adj_snpimg.html")
 
     outplt = np.vstack((yac[-1], 1 + x1ac[-1], 2 + x2ac[-1], 3 + x3ac[-1]))
     px.scatter(outplt.T).write_html("adj_snpplot.html")
@@ -211,7 +214,15 @@ def plot_results(yac: np.ndarray, x1ac: np.ndarray, x2ac: np.ndarray, x3ac: np.n
     np.savetxt("adj_snp_accum.txt", q[-1], "%f")
 
     px.imshow(q, aspect="auto").write_html("adj_snpaccum_image.html")
-
+    maskA = (yac > 10)
+    maskB = (x1ac > 10)
+    h, w = yac.shape
+    rgb = np.zeros((h, w, 3), dtype=np.uint8)  # start with black
+    rgb[..., 0] = maskA.astype(np.uint8) * 255
+    rgb[..., 1] = maskB.astype(np.uint8) * 255
+    #fig = px.imshow(rgb)
+    #fig.update_layout(coloraxis_showscale=False)  # no colorbar for RGB images
+    Image.fromarray(rgb).save("A_plus_B_rgb.png") 
 
 def write_population_vcf(
     path: str,
@@ -263,11 +274,11 @@ def main() -> None:
     mutations_per_chromosome = 3
 
     rng = np.random.default_rng()
-    male_map = Copos("flat.txt")
-    female_map = Copos("flat.txt")
+    #male_map = Copos("flat.txt")
+    #female_map = Copos("flat.txt")
+    male_map = Copos("ivsqrt.txt")
+    female_map = Copos("ivs.txt")
     #male_map = Copos("ivs.txt")
-    #male_map = Copos("ivsqrt.txt")
-    #female_map = Copos("ivs.txt")
 
     q_accum = np.zeros((generations, chromosome_size), dtype=np.float64)
     yac = np.empty((generations, chromosome_size), dtype=np.float64)

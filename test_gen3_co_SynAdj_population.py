@@ -28,18 +28,22 @@ def recombine_into(dst_a: np.ndarray, dst_b: np.ndarray, src_a: np.ndarray, src_
 
 
 def apply_mutations_population(
+    gen: int,
     arrays: tuple[np.ndarray, ...],
     mutation_counter: int,
     rng: np.random.Generator,
     chromosome_size: int,
     mutations_per_chromosome: int,
 ) -> int:
-#    for arr in arrays:
-#        idx = rng.integers(1, chromosome_size - 1, size=(arr.shape[0], mutations_per_chromosome))
-#        for row, positions in enumerate(idx):
-#            new_ids = np.arange(mutation_counter, mutation_counter + mutations_per_chromosome, dtype=np.int64)
-#            arr[row, positions] = new_ids
-#            mutation_counter += mutations_per_chromosome
+#    #comment until return to do away with mutation  20251112pmc
+     # now accumulating then unaccumulating
+    if (gen < 0):
+       for arr in arrays:
+           idx = rng.integers(1, chromosome_size - 1, size=(arr.shape[0], mutations_per_chromosome))
+           for row, positions in enumerate(idx):
+               new_ids = np.arange(mutation_counter, mutation_counter + mutations_per_chromosome, dtype=np.int64)
+               arr[row, positions] = new_ids
+               mutation_counter += mutations_per_chromosome
     return mutation_counter
 
 
@@ -55,6 +59,7 @@ def recombine_population(
 
 
 def simulate_generation(
+    gen: int,
     male_y: np.ndarray,
     male_x: np.ndarray,
     female_x2: np.ndarray,
@@ -70,6 +75,7 @@ def simulate_generation(
     female_count = female_x2.shape[0]
 
     mutation_counter = apply_mutations_population(
+        gen,
         (male_y, male_x, female_x2, female_x3),
         mutation_counter,
         rng,
@@ -167,8 +173,19 @@ def simulate_population(
     male_x = np.ones((num_pairs, chromosome_size), dtype=np.int64)
     female_x2 = 2 * np.ones((num_pairs, chromosome_size), dtype=np.int64)
     female_x3 = 3 * np.ones((num_pairs, chromosome_size), dtype=np.int64)
-    male_y[2,10]=5 # just this one mutation
-    female_x2[2,-5]=6 #just one 20251112pmc
+    ## only track mutations from gen1 pmc
+    male_y[0,::20]=5
+    male_x[0,::20]=6
+    female_x2[0,::20]=7
+    female_x3[0,::20]=8
+#     male_y[0,5]=5 # just this one mutation
+    # male_y[0,-5]=6 # just this one mutation
+    # male_x[0,5]=7 # just this one mutation
+    # male_x[0,-5]=8 # just this one mutation
+    # female_x2[0,5]=9 #just one 20251112pmc
+    # female_x2[0,-5]=10 #just one 20251112pmc
+    # female_x3[0,5]=11 #just one 20251112pmc
+    # female_x3[0,-5]=12 #just one 20251112pmc
 
     yac = np.empty((generations, chromosome_size), dtype=np.int64)
     x1ac = np.empty((generations, chromosome_size), dtype=np.int64)
@@ -187,6 +204,7 @@ def simulate_population(
         q[gen] += np.sum(male_y != male_x, axis=0)
 
         mutation_counter, male_y, male_x, female_x2, female_x3 = simulate_generation(
+            gen,
             male_y,
             male_x,
             female_x2,
@@ -206,9 +224,11 @@ def plot_results(yac: np.ndarray, x1ac: np.ndarray, x2ac: np.ndarray, x3ac: np.n
     spacer = np.full((10, yac.shape[1]), -2.0)
     outimg = np.concatenate((yac, spacer, x1ac, spacer, x2ac, spacer, x3ac), axis=0)
     px.imshow(outimg, aspect="auto").write_html("adj_snpimg.html")
+    np.savetxt("outimg.txt",outimg,"%i")
 
     outplt = np.vstack((yac[-1], 1 + x1ac[-1], 2 + x2ac[-1], 3 + x3ac[-1]))
     px.scatter(outplt.T).write_html("adj_snpplot.html")
+    np.savetxt("adj_snpplot.txt", outplt.T, "%i")
 
     px.scatter(q[-1]).write_html("adj_snpaccum.html")
     np.savetxt("adj_snp_accum.txt", q[-1], "%f")
@@ -266,11 +286,11 @@ def main() -> None:
     mutations_per_chromosome = 3
 
     rng = np.random.default_rng()
-#    male_map = Copos("flat.txt")
-#    female_map = Copos("flat.txt")
-    #male_map = Copos("ivs.txt")
+    #male_map = Copos("flat.txt")
+    #female_map = Copos("flat.txt")
     male_map = Copos("ivsqrt.txt")
     female_map = Copos("ivs.txt")
+    #male_map = Copos("ivs.txt")
 
     q_accum = np.zeros((generations, chromosome_size), dtype=np.float64)
     yac = np.empty((generations, chromosome_size), dtype=np.float64)
