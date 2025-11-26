@@ -50,6 +50,4 @@ Key parameters (edit inside `main()`):
 
 - Mutation IDs start at 4 because founders use labels 0–3.
 - SNP divergence currently counts loci where Y and X differ and at least one allele is derived; tweak `variant_mask` in `simulate_population()` if you want a different definition.
-- `neoY_fixed_mutation_frequency.txt` checks both “all derived” and “all identical,” so only true fixation events contribute.
-
-Feel free to adjust map files or parameters and rerun; the outputs listed above will always reflect the most recent invocation.
+- `neoY_fixed_mutation_frequency.txt` checks both “all derived” and “all identical”, so only true fixation events contribute.
