@@ -1,6 +1,6 @@
 # Neo-XY Population Simulation (`gen3_co_SynAdj_population.py`)
 
-This directory hosts the current neo-sex–chromosome simulator used to explore recombination, mutation, and fixation dynamics in a bottlenecked population of worms.
+A neo-sex–chromosome simulator used to explore recombination, mutation, and fixation dynamics in a bottlenecked population of worms.
 
 ## Requirements
 
