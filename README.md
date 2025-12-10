@@ -1,6 +1,6 @@
-# Neo-XY Population Simulation (`gen3_co_SynAdj_population_ondemand.py`)
+# Neo-XY Population Simulation (`gen3_co_SynAdj_population.py`)
 
-This directory hosts the neo-sex–chromosome simulator used to explore recombination, mutation, and fixation dynamics in a bottlenecked population of worms. The active script performs on-demand meiosis so every inherited chromosome triggers its own crossover (sons always retain the neo-Y left arm; daughters inherit the male X plus a female X).
+A neo-sex–chromosome simulator used to explore recombination, mutation, and fixation dynamics in a bottlenecked population of worms.
 
 ## Requirements
 
@@ -13,7 +13,8 @@ python -m pip install numpy scipy plotly Pillow
 ## Running the simulation
 
 ```bash
-python gen3_co_SynAdj_population_ondemand.py
+cd MAsim
+python gen3_co_SynAdj_population.py
 ```
 
 Key parameters (edit inside `main()`):
@@ -28,7 +29,7 @@ Key parameters (edit inside `main()`):
 ## What the script does
 
 1. Initializes `num_pairs` males and females with labeled neo-Y/neo-X chromosomes.
-2. Each generation, adds unique mutations to every chromosome, performs on-demand crossovers using the specified maps, and resamples parents with replacement to form the next generation.
+2. Each generation, adds unique mutations to every chromosome, draws crossover positions from the specified maps, and resamples parents with replacement to form the next generation.
 3. Records haplotype histories, cumulative Y–X SNP divergence, and whether any neo-Y locus is fixed for a derived allele across all sampled males.
 4. Repeats steps 1–3 for `iterations` independent runs and aggregates the outputs.
 
@@ -36,14 +37,14 @@ Key parameters (edit inside `main()`):
 
 | File | Description |
 | --- | --- |
-| `adj_snpimg.html` | Heatmap of haplotypes over all generations (Y, X1, X2, X3 stacked with spacers). |
-| `adj_snpplot.html` | Scatter plot of the terminal-generation chromatids (offset by +0…+3). |
-| `adj_snpaccum.html` | Scatter of per-locus SNP divergence (counts loci where Y≠X and at least one allele is derived). |
-| `adj_snpaccum_image.html` | Heatmap of divergence counts across generations. |
-| `adj_snp_accum.txt` | Raw divergence matrix (`generations × chromosome_size`). |
-| `A_plus_B_rgb.png` | RGB overlay highlighting loci where Y (red) and X1 (green) exceed value 10. |
-| `adj_population.vcf` | Haploid VCF of the final population (male Y, male X, female X2, female X3). |
-| `neoY_fixed_mutation_frequency.txt` | Fraction of iterations where each neo-Y locus was fixed for the same derived allele across all sampled males. |
+| `adj_snpimg.html` | Heatmap of haplotypes over all generations (Y, X1, X2, X3 stacked). |
+| `adj_snpplot.html` | Scatter of the final generation’s four chromatids. |
+| `adj_snpaccum.html` | Per-locus SNP divergence (counts Y≠X with ≥1 derived allele). |
+| `adj_snpaccum_image.html` | Heatmap of the divergence counts over generations. |
+| `adj_snp_accum.txt` | Raw divergence values (`generations × chromosome_size`). |
+| `A_plus_B_rgb.png` | RGB overlay showing where Y (red) and X1 (green) carry alleles >10. |
+| `adj_population.vcf` | Haploid VCF of the final population (all male/female chromosomes). |
+| `neoY_fixed_mutation_frequency.txt` | Fraction of runs where each locus was fixed for the same derived allele across all neo-Y copies. |
 
 ## Notes
 
